@@ -9,6 +9,9 @@ import { useTranslations } from 'next-intl';
 import { useAchievements } from '@/context/hooks/useAchievements';
 import { AchievementBadge } from './AchievementBadge';
 import { AlertTriangle, RefreshCw, Loader2 } from 'lucide-react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { goeyToast } from 'goey-toast';
 import type { AchievementCategory } from '@/context/types/achievement';
 
 const CATEGORY_KEYS: Array<AchievementCategory | 'all'> = [
@@ -20,6 +23,53 @@ export function AchievementGrid() {
     const tc = useTranslations('common');
     const { data: achievements, isLoading, error, refetch } = useAchievements();
     const [category, setCategory] = useState<AchievementCategory | 'all'>('all');
+    const { publicKey } = useWallet();
+    const queryClient = useQueryClient();
+    const [claimingId, setClaimingId] = useState<string | null>(null);
+
+    async function handleClaim(achievementId: string) {
+        if (!publicKey) {
+            goeyToast.warning('Wallet Required', {
+                description: 'Connect your wallet to claim achievements.',
+            });
+            return;
+        }
+
+        setClaimingId(achievementId);
+        try {
+            const response = await fetch('/api/achievements/award', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    achievementId,
+                    learnerWallet: publicKey.toBase58(),
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                goeyToast.error('Claim Failed', {
+                    description: data.error || 'Could not claim achievement.',
+                });
+                return;
+            }
+
+            goeyToast.success(`Achievement Unlocked! 🏆`, {
+                description: `${data.name} — +${data.xpReward} XP earned!`,
+            });
+
+            // Refresh achievements + XP
+            queryClient.invalidateQueries({ queryKey: ['achievements'] });
+            queryClient.invalidateQueries({ queryKey: ['xpBalance'] });
+        } catch (err) {
+            goeyToast.error('Claim Failed', {
+                description: err instanceof Error ? err.message : 'Network error',
+            });
+        } finally {
+            setClaimingId(null);
+        }
+    }
 
     if (isLoading) {
         return (
@@ -96,6 +146,7 @@ export function AchievementGrid() {
                         key={achievement.id}
                         achievement={achievement}
                         showDetails
+                        onClaim={handleClaim}
                     />
                 ))}
                 {filtered?.length === 0 && (
@@ -107,3 +158,4 @@ export function AchievementGrid() {
         </div>
     );
 }
+

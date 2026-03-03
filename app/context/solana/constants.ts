@@ -11,7 +11,7 @@ export const PROGRAM_ID = new PublicKey(
     process.env.NEXT_PUBLIC_PROGRAM_ID ||
     (process.env.NODE_ENV === 'production'
         ? (() => { throw new Error('NEXT_PUBLIC_PROGRAM_ID must be set in production'); })()
-        : 'ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf')
+        : 'B2vesAWAqYqsQvR2yKDpPf9RaUBLNrnjsCzXrgPcVGwh')
 );
 
 /** XP token mint address (Token-2022, soulbound) */
@@ -19,7 +19,7 @@ export const XP_MINT = new PublicKey(
     process.env.NEXT_PUBLIC_XP_MINT ||
     (process.env.NODE_ENV === 'production'
         ? (() => { throw new Error('NEXT_PUBLIC_XP_MINT must be set in production'); })()
-        : 'xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3')
+        : 'HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a')
 );
 
 /** Token-2022 program ID */

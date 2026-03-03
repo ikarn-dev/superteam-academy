@@ -13,6 +13,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useState } from 'react';
+import { goeyToast } from 'goey-toast';
 import {
     fetchEnrollment,
     type EnrollmentState,
@@ -84,6 +85,9 @@ export function useLessonCompletion(courseId: string) {
         },
         onSuccess: () => {
             setCompletionStep('idle');
+            goeyToast.success('Lesson Completed! ✨', {
+                description: 'XP earned — keep going!',
+            });
             // Invalidate enrollment, progress, and XP queries
             queryClient.invalidateQueries({
                 queryKey: ['enrollment', courseId],
@@ -93,6 +97,12 @@ export function useLessonCompletion(courseId: string) {
             });
             queryClient.invalidateQueries({
                 queryKey: ['xpBalance'],
+            });
+        },
+        onError: (error) => {
+            setCompletionStep('idle');
+            goeyToast.error('Lesson Failed', {
+                description: error.message,
             });
         },
     });
@@ -114,11 +124,17 @@ export function useLessonCompletion(courseId: string) {
 /**
  * Hook for finalizing a course via the backend API.
  *
- * Awards bonus XP and enables credential issuance.
+ * Awards bonus XP and auto-issues a credential NFT after finalization.
  */
 export function useCourseFinalization(courseId: string) {
     const { publicKey } = useWallet();
     const queryClient = useQueryClient();
+    const [credentialResult, setCredentialResult] = useState<{
+        action: string;
+        credentialAsset: string;
+        signature: string;
+    } | null>(null);
+    const [isIssuingCredential, setIsIssuingCredential] = useState(false);
 
     const mutation = useMutation<LessonCompletionResult, Error>({
         mutationFn: async () => {
@@ -140,7 +156,10 @@ export function useCourseFinalization(courseId: string) {
 
             return response.json();
         },
-        onSuccess: () => {
+        onSuccess: async () => {
+            goeyToast.success('Course Finalized! 🎉', {
+                description: 'Bonus XP awarded — minting your credential...',
+            });
             queryClient.invalidateQueries({
                 queryKey: ['enrollment', courseId],
             });
@@ -150,6 +169,41 @@ export function useCourseFinalization(courseId: string) {
             queryClient.invalidateQueries({
                 queryKey: ['xpBalance'],
             });
+
+            // Auto-issue credential NFT after finalization
+            try {
+                setIsIssuingCredential(true);
+                const credResponse = await fetch('/api/credentials/issue', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ courseId }),
+                });
+
+                if (credResponse.ok) {
+                    const result = await credResponse.json();
+                    setCredentialResult(result);
+                    goeyToast.success('Credential Minted! 🎓', {
+                        description: 'Your on-chain credential NFT has been issued to your wallet.',
+                    });
+                } else {
+                    goeyToast.warning('Credential Pending', {
+                        description: 'Course finalized but credential minting failed. Try again from your dashboard.',
+                    });
+                    console.warn('[useCourseFinalization] Credential issuance failed, course still finalized');
+                }
+            } catch (err) {
+                goeyToast.warning('Credential Pending', {
+                    description: 'Course finalized but credential minting encountered an error.',
+                });
+                console.warn('[useCourseFinalization] Credential issuance error:', err);
+            } finally {
+                setIsIssuingCredential(false);
+            }
+        },
+        onError: (error) => {
+            goeyToast.error('Finalization Failed', {
+                description: error.message,
+            });
         },
     });
 
@@ -157,6 +211,8 @@ export function useCourseFinalization(courseId: string) {
         finalize: mutation.mutate,
         finalizeAsync: mutation.mutateAsync,
         isFinalizing: mutation.isPending,
+        isIssuingCredential,
+        credentialResult,
         error: mutation.error,
     };
 }

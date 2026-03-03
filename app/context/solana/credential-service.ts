@@ -55,12 +55,48 @@ export interface CredentialStatus {
 
 // ─── Track Collections ───────────────────────────────────────────────
 
-/** Track collection addresses (to be populated with real addresses) */
-export const TRACK_COLLECTIONS: Record<number, string> = {
-    // These will be populated when track collections are created on-chain
-    // 1: 'AnchorCollectionAddress...',
-    // 2: 'DeFiCollectionAddress...',
-};
+/**
+ * Track collection addresses for credential NFTs.
+ *
+ * Loaded from TRACK_COLLECTIONS env var (JSON object: { "1": "address", "2": "address" }).
+ * These are the Metaplex Core collection addresses created by `create_achievement_type`.
+ *
+ * Example env value:
+ *   TRACK_COLLECTIONS={"1":"AnchorCollAddr...","2":"DeFiCollAddr..."}
+ */
+function parseTrackCollections(): Record<number, string> {
+    const raw = process.env.TRACK_COLLECTIONS;
+    if (!raw) return {};
+    try {
+        const parsed = JSON.parse(raw);
+        const result: Record<number, string> = {};
+        for (const [key, value] of Object.entries(parsed)) {
+            result[Number(key)] = value as string;
+        }
+        return result;
+    } catch {
+        console.warn('[credential-service] Failed to parse TRACK_COLLECTIONS env var, using empty');
+        return {};
+    }
+}
+
+export const TRACK_COLLECTIONS: Record<number, string> = parseTrackCollections();
+
+/**
+ * Get the collection address for a track, or throw if not configured.
+ */
+export function getTrackCollection(trackId: number): PublicKey {
+    const address = TRACK_COLLECTIONS[trackId];
+    if (!address) {
+        throw new ServiceError(
+            `Track collection not configured for track ${trackId}. ` +
+            `Set TRACK_COLLECTIONS env var with the collection address.`,
+            'TRACK_COLLECTION_MISSING',
+            500
+        );
+    }
+    return new PublicKey(address);
+}
 
 export const TRACK_NAMES: Record<number, string> = {
     1: 'Anchor Developer',

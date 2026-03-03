@@ -310,12 +310,14 @@ export function safeErrorDetails(error: unknown): string | undefined {
 
 | Control | Implementation |
 |---|---|
-| Private key storage | `BACKEND_SIGNER_PRIVATE_KEY` env var |
+| Private key storage | `BACKEND_SIGNER_PRIVATE_KEY` env var (deployer wallet for self-deployed instances) |
 | Key access | Server-side only (never exposed to client) |
 | Transaction simulation | Simulated before sending |
 | Confirmation | Waited with 60-second timeout |
 | Retry guards | `isTransientError` check before retry |
 | Nonce reuse prevention | Fresh blockhash per transaction |
+| Cron endpoint auth | `CRON_SECRET` env var (protects `/api/cron/sync-xp-snapshots`) |
+| Track collections | `TRACK_COLLECTIONS` env var (server-only JSON for credential flow) |
 
 ---
 

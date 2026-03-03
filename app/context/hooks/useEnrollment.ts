@@ -11,6 +11,7 @@
 import { useCallback, useState, useRef } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { goeyToast } from 'goey-toast';
 import {
     buildEnrollTransaction,
     fetchEnrollment,
@@ -95,9 +96,17 @@ export function useEnroll(courseId: string) {
         },
         onSuccess: (signature: string) => {
             setTxSignature(signature);
+            goeyToast.success('Enrolled! 🚀', {
+                description: 'You are now enrolled. Start learning!',
+            });
             // Invalidate enrollment queries so UI updates
             queryClient.invalidateQueries({
                 queryKey: ['enrollment', courseId, publicKey?.toBase58()],
+            });
+        },
+        onError: (error: Error) => {
+            goeyToast.error('Enrollment Failed', {
+                description: error.message,
             });
         },
     });

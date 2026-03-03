@@ -325,7 +325,7 @@ The central user table. All other tables reference this via `user_id`.
 | `bio` | String | Nullable | User biography |
 | `social_links` | JSONB | Nullable | `{ twitter?, github?, website? }` |
 | `is_public` | Boolean | Default: true | Public profile visibility |
-| `role` | String | Default: "student" | `'student'` or `'instructor'` |
+| `role` | String | Default: "student" | `'student'` (admin determined via whitelist) |
 | `onboarding_complete` | Boolean | Default: false | Onboarding flow status |
 | `session_version` | Int | Default: 1 | For forced session invalidation |
 | `last_login_at` | Timestamptz | Nullable | Last login timestamp |

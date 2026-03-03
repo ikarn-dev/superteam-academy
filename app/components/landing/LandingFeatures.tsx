@@ -127,10 +127,10 @@ function CodeEditorVisual() {
 /* ─── Visual Demo: Achievements ────────────────────────────────── */
 function AchievementsVisual() {
     const badges = [
-        { label: 'First Steps', src: '/Badges/first_steps.svg', earned: true },
-        { label: 'Ten Courses', src: '/Badges/ten_courses.svg', earned: true },
-        { label: 'Early Adopter', src: '/Badges/early_adopter.svg', earned: true },
-        { label: 'Full Stack', src: '/Badges/full_stack_solana.svg', earned: false },
+        { label: 'First Steps', src: '/badges/first_steps.svg', earned: true },
+        { label: 'Ten Courses', src: '/badges/ten_courses.svg', earned: true },
+        { label: 'Early Adopter', src: '/badges/early_adopter.svg', earned: true },
+        { label: 'Full Stack', src: '/badges/full_stack_solana.svg', earned: false },
     ];
     return (
         <div className="grid grid-cols-2 gap-2.5">

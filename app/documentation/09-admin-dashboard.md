@@ -149,7 +149,7 @@ sequenceDiagram
     participant API as User API
     participant DB as PostgreSQL
 
-    Admin->>API: PUT /api/admin/users/{id} { role: "instructor" }
+    Admin->>API: PUT /api/admin/users/{id} { role: "student" }
     API->>DB: Get current profile
     API->>DB: Update profile.role
     API->>DB: Insert role_change_log

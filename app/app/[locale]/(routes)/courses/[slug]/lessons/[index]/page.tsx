@@ -18,6 +18,7 @@ import {
 import { SplitLayout } from '@/components/editor/SplitLayout';
 import { CodeEditor } from '@/components/editor/CodeEditor';
 import { ChallengePanel } from '@/components/editor/ChallengePanel';
+import { VideoPlayer } from '@/components/lesson/VideoPlayer';
 import { LessonContent } from '@/components/lesson/LessonContent';
 import { LessonNavigation } from '@/components/lesson/LessonNavigation';
 
@@ -42,6 +43,7 @@ export default function LessonViewPage() {
     const lesson = course?.lessons?.[lessonIndex] ?? null;
     const isCompleted = isLessonDone(progress.data, lessonIndex);
     const isChallenge = lesson?.type === 'challenge' && !!lesson.challenge;
+    const isVideo = lesson?.type === 'video';
 
     // Fetch individual lesson content
     useEffect(() => {
@@ -126,7 +128,13 @@ export default function LessonViewPage() {
     };
 
     // Determine the right pane content based on lesson type
-    const rightPane = isChallenge ? (
+    const rightPane = isVideo ? (
+        <VideoPlayer
+            videoUrl={lesson.videoUrl}
+            videoFileRef={lesson.videoFileRef}
+            title={lesson.title}
+        />
+    ) : isChallenge ? (
         <ChallengePanel
             challenge={lesson.challenge!}
             hints={lesson.hints}

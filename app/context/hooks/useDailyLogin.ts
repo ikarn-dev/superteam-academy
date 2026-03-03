@@ -5,6 +5,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { goeyToast } from 'goey-toast';
 import type { DailyLoginStreak } from '@/context/types/daily-login';
 
 async function fetchDailyLogin(): Promise<DailyLoginStreak> {
@@ -36,6 +37,9 @@ export function useDailyLogin() {
             queryClient.setQueryData(['daily-login'], result);
             // Also invalidate leaderboard since offchain_xp changed
             queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+            goeyToast.success(`Day ${result.currentStreak} Streak! \ud83d\udd25`, {
+                description: `+${result.todayXp ?? 10} XP daily login bonus claimed!`,
+            });
         },
     });
 

@@ -52,6 +52,10 @@ export interface Course {
     createdAt: number;
     updatedAt: number;
     bump: number;
+    /** Sanity-enriched fields (populated by listing hooks) */
+    title?: string;
+    description?: string;
+    thumbnail?: string;
 }
 
 /**
@@ -79,6 +83,10 @@ export interface Lesson {
     challenge?: SanityChallenge;
     /** Progressive hints for the lesson */
     hints?: string[];
+    /** Video URL (YouTube/Vimeo/external) for video lessons */
+    videoUrl?: string;
+    /** Sanity file asset ref for directly uploaded videos */
+    videoFileRef?: string;
 }
 
 /** Quiz attached to a lesson */

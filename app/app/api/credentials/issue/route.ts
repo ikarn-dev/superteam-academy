@@ -5,17 +5,14 @@
  *
  * Flow:
  * 1. Authenticate the learner via session
- * 2. Verify the course is finalized
- * 3. Issue or upgrade credential NFT
- * 4. Return the credential asset address and tx signature
+ * 2. Fetch course data to resolve trackId → trackCollection
+ * 3. Verify the course is finalized
+ * 4. Issue or upgrade credential NFT
+ * 5. Return the credential asset address and tx signature
  *
  * Request body: {
  *   courseId: string,
- *   credentialName: string,
- *   metadataUri?: string, (auto-generated if not provided)
- *   coursesCompleted: number,
- *   totalXp: number,
- *   trackCollection: string,
+ *   credentialName?: string, (auto-generated from course + track if not provided)
  * }
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -27,14 +24,20 @@ import {
     issueCredential,
     upgradeCredential,
     checkCredentialStatus,
+    getTrackCollection,
+    TRACK_NAMES,
 } from '@/context/solana/credential-service';
 import { getMetadataUri } from '@/backend/certificate/certificate-metadata';
+import { fetchCourseById } from '@/context/solana/course-service';
+import { getXpBalance } from '@/context/solana/xp';
+import { prisma } from '@/backend/prisma';
+import { authOptions } from '@/backend/auth/auth-options';
 
 export async function POST(request: NextRequest) {
     try {
         // 1. Authenticate
-        const session = await getServerSession();
-        if (!session?.user) {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
             return NextResponse.json(
                 { error: 'Authentication required' },
                 { status: 401 }
@@ -43,14 +46,7 @@ export async function POST(request: NextRequest) {
 
         // 2. Parse and validate body
         const body = await request.json();
-        const {
-            courseId,
-            credentialName,
-            metadataUri,
-            coursesCompleted,
-            totalXp,
-            trackCollection,
-        } = body;
+        const { courseId, credentialName: customName } = body;
 
         if (!courseId || typeof courseId !== 'string') {
             return NextResponse.json(
@@ -59,42 +55,58 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!credentialName || !trackCollection) {
-            return NextResponse.json(
-                { error: 'Missing required fields: credentialName, trackCollection' },
-                { status: 400 }
-            );
-        }
-
-
         // 3. Get learner wallet from linked accounts
-        const userEmail = session.user.email;
-        if (!userEmail) {
-            return NextResponse.json(
-                { error: 'No email in session' },
-                { status: 400 }
-            );
-        }
+        const linkedAccount = await prisma.linked_accounts.findFirst({
+            where: {
+                user_id: session.user.id,
+                provider: 'wallet',
+            },
+            select: { provider_id: true },
+        });
 
-        // Lookup wallet from session — the learner's linked wallet address
-        // should be in the session via next-auth callbacks
-        const walletAddress = (session.user as { walletAddress?: string }).walletAddress;
-        if (!walletAddress) {
+        if (!linkedAccount?.provider_id) {
             return NextResponse.json(
                 { error: 'No linked wallet found. Link a wallet first.' },
                 { status: 400 }
             );
         }
 
+        const walletAddress = linkedAccount.provider_id;
         const learner = new PublicKey(walletAddress);
         const connection = new Connection(getRpcUrl(), 'confirmed');
         const backendSigner = loadBackendSigner();
-        const trackCollectionPubkey = new PublicKey(trackCollection);
 
-        // Auto-generate metadataUri if not provided by frontend
-        const resolvedMetadataUri = metadataUri || getMetadataUri(courseId, walletAddress);
+        // 4. Fetch course data to resolve trackId → trackCollection
+        const course = await fetchCourseById(connection, courseId);
+        if (!course) {
+            return NextResponse.json(
+                { error: 'Course not found on-chain.' },
+                { status: 404 }
+            );
+        }
 
-        // 4. Check if credential already exists (issue vs upgrade)
+        // Resolve track collection address from env config
+        let trackCollectionPubkey: PublicKey;
+        try {
+            trackCollectionPubkey = getTrackCollection(course.trackId);
+        } catch {
+            return NextResponse.json(
+                { error: `Track collection not configured for track ${course.trackId}. Set TRACK_COLLECTIONS env var.` },
+                { status: 500 }
+            );
+        }
+
+        // Auto-generate credential name from course + track
+        const trackName = TRACK_NAMES[course.trackId] || 'Solana Developer';
+        const credentialName = customName || `${trackName} — Course ${courseId}`;
+
+        // Auto-generate metadata URI
+        const metadataUri = getMetadataUri(courseId, walletAddress);
+
+        // Get on-chain XP balance for metadata
+        const totalXp = await getXpBalance(connection, learner);
+
+        // 5. Check if credential already exists (issue vs upgrade)
         const status = await checkCredentialStatus(connection, courseId, learner);
 
         if (!status.finalized) {
@@ -115,9 +127,9 @@ export async function POST(request: NextRequest) {
                     courseId,
                     credentialAsset: new PublicKey(status.credentialAsset),
                     newName: credentialName,
-                    newMetadataUri: resolvedMetadataUri,
-                    coursesCompleted: coursesCompleted ?? 1,
-                    totalXp: totalXp ?? 0,
+                    newMetadataUri: metadataUri,
+                    coursesCompleted: 1,
+                    totalXp,
                     trackCollection: trackCollectionPubkey,
                 }
             );
@@ -138,9 +150,9 @@ export async function POST(request: NextRequest) {
                 learner,
                 courseId,
                 credentialName,
-                metadataUri: resolvedMetadataUri,
-                coursesCompleted: coursesCompleted ?? 1,
-                totalXp: totalXp ?? 0,
+                metadataUri,
+                coursesCompleted: 1,
+                totalXp,
                 trackCollection: trackCollectionPubkey,
             }
         );
@@ -158,3 +170,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+

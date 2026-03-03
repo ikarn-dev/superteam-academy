@@ -1,9 +1,9 @@
 /**
- * Instructor Courses page — view courses assigned to your wallet.
+ * My Courses page — view courses available on the platform.
  *
- * Shows both on-chain course data (stats, enrollments) and Sanity CMS data
- * (title, description, modules). Read-only — on-chain CRUD is admin-only.
- * Prompts to connect/link wallet if not available.
+ * Shows Sanity CMS course data (title, description) enriched with on-chain data.
+ * Read-only — on-chain CRUD is admin-only.
+ * Course content editing is available via Sanity Studio.
  */
 
 'use client';
@@ -37,7 +37,7 @@ interface CourseItem {
     createdAt?: number;
 }
 
-export default function InstructorCoursesPage() {
+export default function MyCoursesPage() {
     const { connected } = useWallet();
     const { setVisible } = useWalletModal();
     const [courses, setCourses] = useState<CourseItem[]>([]);
@@ -50,7 +50,7 @@ export default function InstructorCoursesPage() {
         setError(null);
         setNoWallet(false);
         try {
-            const res = await fetch('/api/instructor/courses');
+            const res = await fetch('/api/cms/courses');
             const data = await res.json();
             if (!res.ok) {
                 setError(data.error || 'Failed to load');
@@ -161,7 +161,7 @@ export default function InstructorCoursesPage() {
                     <h3 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 8px' }}>No courses assigned</h3>
                     <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', margin: 0, maxWidth: '400px', marginInline: 'auto' }}>
                         Ask an admin to create a course with your wallet as the creator,
-                        or assign you as instructor in Sanity Studio.
+                        or create course content in Sanity Studio.
                     </p>
                 </div>
             ) : (

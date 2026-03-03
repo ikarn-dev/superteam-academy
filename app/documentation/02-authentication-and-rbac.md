@@ -266,7 +266,7 @@ graph TB
 graph LR
     subgraph Token["JWT Token Payload"]
         UID["userId: UUID"]
-        ROLE["role: 'student' | 'instructor'"]
+        ROLE["role: 'student'"]
         WALLET["walletAddress: string | null"]
         EMAIL["email: string | null"]
         NAME["name: string | null"]
@@ -303,14 +303,11 @@ The `session_version` field in the `profiles` table allows forced session invali
 ```mermaid
 graph TD
     ADMIN["Admin<br/>Full platform control"]
-    INSTRUCTOR["Instructor<br/>Course management"]
     STUDENT["Student<br/>Default role"]
 
-    ADMIN --> INSTRUCTOR
-    INSTRUCTOR --> STUDENT
+    ADMIN --> STUDENT
 
     style ADMIN fill:#e74c3c,color:#fff
-    style INSTRUCTOR fill:#f39c12,color:#fff
     style STUDENT fill:#3498db,color:#fff
 ```
 
@@ -319,7 +316,6 @@ graph TD
 | Role | Capabilities |
 |---|---|
 | **student** | Browse courses, enroll, complete lessons, earn XP, community participation |
-| **instructor** | All student capabilities + create/manage courses via CMS |
 | **admin** | All capabilities + user management, content moderation, platform analytics, whitelist management |
 
 ### Admin Determination Flow

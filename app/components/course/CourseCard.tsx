@@ -14,6 +14,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/context/i18n/navigation';
 import { ArrowRight, BookOpen, Sparkles, Users } from 'lucide-react';
+import Image from 'next/image';
 import type { Course, Difficulty } from '@/context/types/course';
 import { getTrackColor, getTrackName } from '@/context/course/tracks';
 import { CourseDifficultyBadge } from './CourseDifficultyBadge';
@@ -98,8 +99,15 @@ export function CourseCard({ course, index = 0, onClick }: CourseCardProps) {
                 <div className="flex flex-col gap-2.5 flex-1">
                     {/* Course title — centered like reference */}
                     <h3 className="text-sm sm:text-base font-bold font-supreme text-foreground text-center leading-snug m-0 line-clamp-2">
-                        {course.courseId}
+                        {course.title ?? course.courseId}
                     </h3>
+
+                    {/* Description */}
+                    {course.description && (
+                        <p className="text-[11px] sm:text-xs text-muted-foreground font-supreme text-center line-clamp-2 leading-relaxed">
+                            {course.description}
+                        </p>
+                    )}
 
                     {/* Meta badges */}
                     <div className="flex flex-wrap items-center justify-center gap-1.5">

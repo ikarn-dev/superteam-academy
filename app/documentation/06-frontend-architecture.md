@@ -172,6 +172,9 @@ graph TB
 | Badge | Status badges |
 | Avatar | User avatars |
 | Calendar | Date picker (react-day-picker) |
+| VideoPlayer | YouTube/Vimeo iframe + direct Sanity video uploads |
+| ChallengePanel | CodeMirror editor + test runner + Judge0 execution |
+| ClaimXpPopup | Celebratory XP claim popup for daily streaks |
 
 ---
 

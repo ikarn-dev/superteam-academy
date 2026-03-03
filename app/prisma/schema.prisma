@@ -23,7 +23,7 @@ model profiles {
   bio            String?
   social_links   Json?     @db.JsonB  // { twitter?, github?, website? }
   is_public      Boolean   @default(true)
-  role                String    @default("student")    // 'student' | 'instructor'
+  role                String    @default("student")    // 'student' (admin determined via admin_whitelist)
   onboarding_complete Boolean   @default(false)
   session_version     Int       @default(1)
   last_login_at  DateTime? @db.Timestamptz(6)

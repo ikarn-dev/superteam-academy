@@ -156,7 +156,6 @@ C4Context
     title Superteam Academy - System Context Diagram
 
     Person(student, "Student", "Learns Solana development through interactive courses")
-    Person(instructor, "Instructor", "Creates and manages course content")
     Person(admin, "Admin", "Manages platform, users, and content")
 
     System(academy, "Superteam Academy", "LMS Platform with on-chain credentials")
@@ -168,8 +167,7 @@ C4Context
     System_Ext(oauth, "OAuth Providers", "Google and GitHub authentication")
 
     Rel(student, academy, "Enrolls in courses, completes lessons, earns XP")
-    Rel(instructor, academy, "Creates courses via CMS")
-    Rel(admin, academy, "Manages users, moderates content")
+    Rel(admin, academy, "Manages users, moderates content, creates courses via CMS")
     Rel(academy, solana, "Records progress, mints credentials")
     Rel(academy, helius, "Queries assets, leaderboard data")
     Rel(academy, sanity, "Fetches course content")

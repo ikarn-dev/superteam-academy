@@ -21,7 +21,7 @@
 ```mermaid
 graph TB
     subgraph Program["Superteam Academy Program"]
-        PID["Program ID<br/>ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf"]
+        PID["Program ID<br/>Original: ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf<br/>Self-Deployed: B2vesAWAqYqsQvR2yKDpPf9RaUBLNrnjsCzXrgPcVGwh"]
 
         subgraph Instructions["16 Instructions"]
             I_COURSE["Course Management<br/>create_course, update_course,<br/>deactivate_course"]
@@ -43,7 +43,7 @@ graph TB
         end
 
         subgraph Tokens["Token Integration"]
-            TOK_XP["XP Mint (Token-2022)<br/>xpXPUjkfk7t4AJF..."]
+            TOK_XP["XP Mint (Token-2022)<br/>Original: xpXPUjkfk7t4AJF...<br/>Self-Deployed: HA5ZraV52nBS..."]
             TOK_CRED["Credential NFTs<br/>Metaplex Core"]
             TOK_ACH["Achievement NFTs<br/>Metaplex Core"]
         end
@@ -143,7 +143,7 @@ graph LR
     end
 
     subgraph Derivation["PublicKey.findProgramAddressSync"]
-        D["Program ID:<br/>ACADBRCB3z..."]
+        D["Program ID:<br/>Self-Deployed: B2ves..."]
     end
 
     subgraph Addresses["Derived PDAs"]
@@ -259,7 +259,8 @@ The `executeWithRetry` method provides automatic retry for transient failures:
 | Property | Value |
 |---|---|
 | Standard | SPL Token-2022 |
-| Mint Address | `xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3` |
+| Mint Address (Original) | `xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3` |
+| Mint Address (Self-Deployed) | `HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a` |
 | Type | Soulbound (non-transferable) |
 | Decimals | Default |
 | ATA Program | TOKEN_2022_PROGRAM_ID |
@@ -359,6 +360,13 @@ stateDiagram-v2
 | `hasTrackCredential(ownerAddress, trackCollection)` | Check track credential ownership |
 
 ### Track Collections
+
+Track collection addresses are loaded from the `TRACK_COLLECTIONS` env var (JSON format). These are created on-chain via `createAchievementType()` in `achievement-service.ts`. Use `getTrackCollection(trackId)` to retrieve a collection address.
+
+```env
+# Example
+TRACK_COLLECTIONS={"1":"AnchorCollAddr...","2":"DeFiCollAddr..."}
+```
 
 | Track ID | Track Name |
 |---|---|

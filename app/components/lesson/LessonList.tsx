@@ -50,6 +50,7 @@ export function LessonList({ courseId, lessons, progress, isEnrolled }: LessonLi
                                         <span className="lesson-title">{lesson.title}</span>
                                         <span className="lesson-meta">
                                             {mins}m
+                                            {lesson.type === 'video' && ` \u2022 \ud83c\udfa5 Video`}
                                             {lesson.type === 'challenge' && ` \u2022 Challenge`}
                                             {lesson.quiz && ` \u2022 ${t('quiz')}`}
                                             {completed && ` \u2022 ${t('completed')}`}

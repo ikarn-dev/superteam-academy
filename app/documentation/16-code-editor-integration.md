@@ -6,6 +6,8 @@
 - [CodeMirror 6 Editor](#codemirror-6-editor)
 - [Code Execution Pipeline](#code-execution-pipeline)
 - [Code Challenge Interface](#code-challenge-interface)
+- [ChallengePanel Component](#challengepanel-component)
+- [Lesson Type Branching](#lesson-type-branching)
 - [Configuration](#configuration)
 - [API Endpoint](#api-endpoint)
 
@@ -197,6 +199,39 @@ stateDiagram-v2
 | `expected` | string | Expected output (or `[hidden]`) |
 | `actual` | string | Actual output (or `[hidden]`) |
 | `isHidden` | boolean | Whether test details are hidden |
+
+---
+
+## ChallengePanel Component
+
+The `ChallengePanel` (`components/editor/ChallengePanel.tsx`) provides a standalone challenge UI for lessons of type `challenge`. It wraps `CodeEditor` with test-running capabilities.
+
+| Feature | Detail |
+|---------|--------|
+| Code editor | CodeMirror 6 with language-specific highlighting |
+| Instructions panel | Markdown-rendered challenge instructions from Sanity |
+| Test runner | Submits code + testCases to `/api/code/execute` via `useCodeExecution` |
+| Result display | Pass/fail per test case with expected vs actual output |
+| Fallback | Client-side string matching when `CODE_EXECUTION_ENABLED=false` |
+| Completion | Marks lesson complete when all tests pass |
+
+---
+
+## Lesson Type Branching
+
+The lesson viewer page (`courses/[slug]/lessons/[index]/page.tsx`) uses a 3-way branch to render the right component based on lesson type:
+
+```mermaid
+flowchart TD
+    LESSON["Lesson Data"] --> TYPE{lesson.type?}
+    TYPE -->|video| VP["VideoPlayer<br/>YouTube / Vimeo / upload"]
+    TYPE -->|challenge| CP["ChallengePanel<br/>CodeEditor + test runner"]
+    TYPE -->|content / default| CE["CodeEditor<br/>Read-only or editable"]
+
+    VP --> COMPLETE["Mark complete button"]
+    CP -->|All tests pass| COMPLETE
+    CE --> COMPLETE
+```
 
 ---
 

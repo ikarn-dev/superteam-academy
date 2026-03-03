@@ -114,10 +114,15 @@ flowchart LR
 | `UPSTASH_REDIS_REST_TOKEN` | Cache | None | Redis auth token |
 | `NEXT_PUBLIC_SOLANA_NETWORK` | Blockchain | devnet | Solana network |
 | `NEXT_PUBLIC_SOLANA_RPC_URL` | Blockchain | Public devnet | Custom RPC endpoint |
+| `NEXT_PUBLIC_PROGRAM_ID` | Blockchain | None | Deployed program ID |
+| `NEXT_PUBLIC_XP_MINT` | Blockchain | None | XP token mint address |
+| `NEXT_PUBLIC_BACKEND_SIGNER` | Blockchain | None | Backend signer public key |
 | `NEXT_PUBLIC_HELIUS_RPC_URL` | Blockchain | None | Helius RPC URL |
 | `HELIUS_RPC_URL` | Blockchain | None | Server-side Helius URL |
 | `HELIUS_API_KEY` | Blockchain | None | Helius API key |
-| `BACKEND_SIGNER_PRIVATE_KEY` | Blockchain | None | Backend signer for on-chain ops |
+| `BACKEND_SIGNER_PRIVATE_KEY` | Blockchain | None | Deployer wallet private key (base58) |
+| `TRACK_COLLECTIONS` | Blockchain | None | Track collection addresses (JSON) |
+| `CRON_SECRET` | Security | None | Secret for XP snapshot cron endpoint |
 | `SANITY_PROJECT_ID` | CMS | None | Sanity project ID |
 | `SANITY_DATASET` | CMS | production | Sanity dataset |
 | `SANITY_API_TOKEN` | CMS | None | Sanity API token |
@@ -153,6 +158,8 @@ graph LR
         SRV6["UPSTASH_REDIS_REST_TOKEN"]
         SRV7["SANITY_API_TOKEN"]
         SRV8["SENTRY_DSN"]
+        SRV9["CRON_SECRET"]
+        SRV10["TRACK_COLLECTIONS"]
     end
 
     style Public fill:#3498db,color:#fff

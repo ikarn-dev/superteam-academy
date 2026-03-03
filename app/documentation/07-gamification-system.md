@@ -25,7 +25,7 @@ graph TB
 
     subgraph Rewards["Reward Distribution"]
         subgraph OnChain["On-Chain (Permanent)"]
-            XP_MINT["XP Token Mint<br/>SPL Token-2022"]
+            XP_MINT["XP Token Mint<br/>SPL Token-2022<br/>(deployment-specific address)"]
             CRED_NFT["Credential NFTs<br/>Metaplex Core"]
             ACH_NFT["Achievement NFTs<br/>Metaplex Core"]
         end
@@ -58,6 +58,15 @@ graph TB
     XP_MINT --> LB_UI
     STREAK_DB --> STREAK_UI
     ACH_NFT --> ACH_UI
+
+    subgraph Feedback["User Feedback"]
+        TOAST["goeyToast<br/>Success/error notifications"]
+        CLAIM_POPUP["ClaimXpPopup<br/>Daily streak celebration"]
+    end
+
+    LOGIN --> CLAIM_POPUP
+    LESSON --> TOAST
+    COURSE --> TOAST
 ```
 
 ---
@@ -249,8 +258,17 @@ sequenceDiagram
         API-->>Client: { alreadyCheckedIn: true }
     end
 
-    API-->>Client: Streak data
+    API-->>>Client: Streak data
 ```
+
+### Frontend Feedback Components
+
+| Action | Component | Behavior |
+|--------|-----------|----------|
+| Daily login XP claim | `ClaimXpPopup` | Full-screen celebratory overlay with XP animation. Only used for daily streak claims inside `DailyLoginStreak.tsx`. |
+| Streak milestone reached | `goeyToast.success` | Toast: "Milestone reached! +{xp} XP" |
+| Lesson/course XP earned | `goeyToast.success` | Toast with XP amount |
+| Achievement unlocked | `goeyToast.success` | Toast: "Achievement unlocked!" |
 
 ---
 

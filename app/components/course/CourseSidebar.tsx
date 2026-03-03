@@ -14,6 +14,8 @@ interface CourseSidebarProps {
     progress: CourseProgressData | undefined;
     isEnrolling: boolean;
     isFinalizing: boolean;
+    isIssuingCredential: boolean;
+    credentialResult: { action: string; credentialAsset: string; signature: string } | null;
     enrollError: Error | null;
     finalizeError: Error | null;
     onEnroll: () => void;
@@ -26,6 +28,8 @@ export function CourseSidebar({
     progress,
     isEnrolling,
     isFinalizing,
+    isIssuingCredential,
+    credentialResult,
     enrollError,
     finalizeError,
     onEnroll,
@@ -114,7 +118,24 @@ export function CourseSidebar({
                         {finalizeError && <p className="cta-error-msg">{finalizeError.message}</p>}
                     </>
                 ) : isFinalized ? (
-                    <div className="cta-completed">✅ {t('completed')}</div>
+                    <div className="cta-completed">
+                        <div>✅ {t('completed')}</div>
+                        {isIssuingCredential && (
+                            <div className="credential-minting">
+                                🔄 Minting credential NFT...
+                            </div>
+                        )}
+                        {credentialResult && (
+                            <a
+                                href={`https://explorer.solana.com/address/${credentialResult.credentialAsset}?cluster=devnet`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="credential-link"
+                            >
+                                🎓 View Credential NFT ↗
+                            </a>
+                        )}
+                    </div>
                 ) : (
                     <a href={`#lesson-${completedCount}`} className="cta-button cta-continue">
                         {t('continueLearning')}
@@ -260,7 +281,26 @@ export function CourseSidebar({
                     background: rgba(20, 241, 149, 0.08);
                     border: 1px solid rgba(20, 241, 149, 0.2);
                     border-radius: 12px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
                 }
+                .credential-minting {
+                    font-size: 0.78rem;
+                    color: rgba(255, 215, 0, 0.8);
+                    animation: pulse 1.5s ease infinite;
+                }
+                .credential-link {
+                    font-size: 0.78rem;
+                    color: #9945FF;
+                    text-decoration: none;
+                    font-weight: 600;
+                    transition: color 0.2s;
+                }
+                .credential-link:hover {
+                    color: #14F195;
+                }
+                @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
                 .sidebar-stats {
                     display: flex;
                     flex-direction: column;

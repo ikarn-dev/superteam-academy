@@ -24,8 +24,10 @@
 |---|---|
 | Production App | []() |
 | GitHub Repository | [github.com/solanabr/superteam-academy](https://github.com/solanabr/superteam-academy) |
-| On-Chain Program | [ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf](https://explorer.solana.com/address/ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf?cluster=devnet) |
-| XP Token Mint | [xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3](https://explorer.solana.com/address/xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3?cluster=devnet) |
+| On-Chain Program (Original) | [ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf](https://explorer.solana.com/address/ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf?cluster=devnet) |
+| XP Token Mint (Original) | [xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3](https://explorer.solana.com/address/xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3?cluster=devnet) |
+| On-Chain Program (Self-Deployed) | [B2vesAWAqYqsQvR2yKDpPf9RaUBLNrnjsCzXrgPcVGwh](https://explorer.solana.com/address/B2vesAWAqYqsQvR2yKDpPf9RaUBLNrnjsCzXrgPcVGwh?cluster=devnet) |
+| XP Token Mint (Self-Deployed) | [HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a](https://explorer.solana.com/address/HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a?cluster=devnet) |
 
 ---
 
@@ -58,6 +60,9 @@
 | CMS Integration | Sanity CMS for course content management | [CMS](documentation/10-cms-and-content.md) |
 | Analytics | GA4 + PostHog (heatmaps) + Sentry (errors) | [Analytics](documentation/15-analytics-and-monitoring.md) |
 | Responsive Design | Mobile-first, all breakpoints | [Frontend](documentation/06-frontend-architecture.md) |
+| Video Lessons | YouTube/Vimeo embeds + Sanity-hosted video uploads | [CMS](documentation/10-cms-and-content.md) |
+| Toast Notifications | goey-toast for all user action feedback (XP, errors, success) | [Notifications](documentation/11-notifications-and-events.md) |
+| Code Challenges | In-lesson coding challenges with test cases via Judge0 CE | [Code Editor](documentation/16-code-editor-integration.md) |
 
 ### Bonus Features (Implemented)
 
@@ -225,11 +230,16 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
 
-# ── Solana (Recommended) ──────────────────────────
+# ── Solana (Required) ─────────────────────────────
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
 NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
+NEXT_PUBLIC_PROGRAM_ID=your-program-id
+NEXT_PUBLIC_XP_MINT=your-xp-mint-address
+NEXT_PUBLIC_BACKEND_SIGNER=your-signer-pubkey
 NEXT_PUBLIC_HELIUS_RPC_URL=your-helius-rpc-url
 BACKEND_SIGNER_PRIVATE_KEY=your-backend-signer-key
+TRACK_COLLECTIONS={"1":"your-track-collection-address"}
+CRON_SECRET=your-cron-secret
 
 # ── Redis (Recommended for rate limiting) ─────────
 UPSTASH_REDIS_REST_URL=your-redis-url
@@ -311,11 +321,22 @@ Complete technical documentation is available in the [`documentation/`](document
 
 ## On-Chain Program
 
+### Original Instance
+
 | Component | Address | Network |
 |---|---|---|
 | Program ID | `ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf` | Devnet |
 | XP Token Mint | `xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3` | Devnet |
 | Authority | `ACAd3USj2sMV6drKcMY2wZtNkhVDHWpC4tfJe93hgqYn` | Devnet |
+
+### Self-Deployed Instance (Active)
+
+| Component | Address | Network |
+|---|---|---|
+| Program ID | `B2vesAWAqYqsQvR2yKDpPf9RaUBLNrnjsCzXrgPcVGwh` | Devnet |
+| XP Token Mint | `HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a` | Devnet |
+| Authority | `H3HFG882JLEFqF9zGr2DV8LJBD8E8aGp8JALJKAXqyZh` | Devnet |
+| Config PDA | `Ce1QZ2TxHNpUifCmzYGJ4db9WHheugfJytBhyyCFuP4G` | Devnet |
 
 **Program Statistics:** 16 instructions, 6 PDA types, 26 error variants, 15 events
 
@@ -351,7 +372,7 @@ app/
   prisma/                   # Database schema + migrations
   sanity/                   # CMS schema definitions
   public/                   # Static assets
-  documentation/            # Technical documentation (15 files)
+  documentation/            # Technical documentation (16 files)
 ```
 
 ---

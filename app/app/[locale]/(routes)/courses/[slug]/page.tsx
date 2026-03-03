@@ -26,7 +26,7 @@ export default function CourseDetailPage() {
     const progress = useCourseProgress(courseId, course?.lessonCount ?? 0);
     const { data: enrollmentStatus } = useEnrollmentStatus(courseId);
     const { enroll, isEnrolling, error: enrollError } = useEnroll(courseId);
-    const { finalize, isFinalizing, error: finalizeError } = useCourseFinalization(courseId);
+    const { finalize, isFinalizing, isIssuingCredential, credentialResult, error: finalizeError } = useCourseFinalization(courseId);
 
     if (isLoading) {
         return (
@@ -119,6 +119,8 @@ export default function CourseDetailPage() {
                         progress={progress.data}
                         isEnrolling={isEnrolling}
                         isFinalizing={isFinalizing}
+                        isIssuingCredential={isIssuingCredential}
+                        credentialResult={credentialResult}
                         enrollError={enrollError}
                         finalizeError={finalizeError}
                         onEnroll={() => enroll(undefined)}

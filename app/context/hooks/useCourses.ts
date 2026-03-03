@@ -39,17 +39,56 @@ export function useCourses() {
 }
 
 /**
- * Fetch only active courses.
+ * Fetch only active courses, enriched with Sanity CMS titles/descriptions.
  */
 export function useActiveCourses() {
     return useQuery<Course[]>({
         queryKey: ['courses', 'active'],
         queryFn: async () => {
-            const response = await fetch('/api/courses?active=true');
-            if (!response.ok) {
+            // Fetch on-chain courses and Sanity summaries in parallel
+            const [coursesRes, cmsRes] = await Promise.all([
+                fetch('/api/courses?active=true'),
+                fetch('/api/cms/courses').catch(() => null),
+            ]);
+
+            if (!coursesRes.ok) {
                 throw new Error('Failed to fetch active courses');
             }
-            const data: CoursesResponse = await response.json();
+            const data: CoursesResponse = await coursesRes.json();
+
+            // Try to merge Sanity data (graceful fallback if CMS unavailable)
+            if (cmsRes?.ok) {
+                try {
+                    const { courses: cmsCourses } = (await cmsRes.json()) as {
+                        courses: Array<{
+                            onChainCourseId: string;
+                            title: string;
+                            description: string;
+                            thumbnail: string | null;
+                        }>;
+                    };
+
+                    // Build lookup map
+                    const cmsMap = new Map(cmsCourses.map((c) => [c.onChainCourseId, c]));
+
+                    // Enrich on-chain courses with Sanity data
+                    return data.courses.map((course) => {
+                        const cms = cmsMap.get(course.courseId);
+                        if (cms) {
+                            return {
+                                ...course,
+                                title: cms.title,
+                                description: cms.description,
+                                thumbnail: cms.thumbnail ?? undefined,
+                            };
+                        }
+                        return course;
+                    });
+                } catch {
+                    // CMS parse failed — return on-chain data as-is
+                }
+            }
+
             return data.courses;
         },
         staleTime: 60_000,

@@ -48,6 +48,8 @@ export function useCourseDetails(courseId: string | undefined) {
                                     type: l.type,
                                     challenge: l.challenge,
                                     hints: l.hints,
+                                    videoUrl: l.videoUrl,
+                                    videoFileRef: l.videoFile?.asset?._ref,
                                     quiz: l.quiz
                                         ? {
                                             questions: l.quiz.questions.map((q, qi) => ({

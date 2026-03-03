@@ -89,7 +89,7 @@ const COURSE_FIELDS = `
         _id, _type, title, description, order,
         "lessons": lessons[]->{
             _id, _type, title, slug, type, order, duration, xpReward,
-            content, videoUrl, hints,
+            content, videoUrl, "videoFile": videoFile { asset }, hints,
             challenge {
                 language, instructions,
                 starterCode { _type, language, code },
@@ -151,7 +151,7 @@ export const cms = {
         if (!client) return null;
         const query = `*[_type == "lesson" && slug.current == $slug][0] {
             _id, _type, title, slug, type, order, duration, xpReward,
-            content, videoUrl, hints,
+            content, videoUrl, "videoFile": videoFile { asset }, hints,
             challenge {
                 language, instructions,
                 starterCode { _type, language, code },

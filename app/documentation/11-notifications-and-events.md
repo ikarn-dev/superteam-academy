@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Event System Architecture](#event-system-architecture)
+- [Frontend Toast Notifications](#frontend-toast-notifications)
 - [Event Listener](#event-listener)
 - [Event Handlers](#event-handlers)
 - [Job Queue](#job-queue)
@@ -43,6 +44,31 @@ graph TB
     QUEUE --> WEBHOOK_D
     QUEUE --> PUSH_D
 ```
+
+---
+
+## Frontend Toast Notifications
+
+The app uses `goey-toast` (`goeyToast`) as the primary in-app notification channel for immediate user feedback on actions.
+
+### Toast Event Mapping
+
+| Event | Hook | Toast Type | Message |
+|-------|------|-----------|---------|
+| Lesson completed | `useLessonCompletion` | success | "Lesson completed! +{xp} XP" |
+| Course finalized | `useCourseFinalization` | success | "Course completed! Bonus XP earned" |
+| Credential issued | `useCourseFinalization` | success | "Credential NFT issued!" |
+| Enrollment | `useEnrollment` | success | "Enrolled successfully!" |
+| Daily login bonus | `useDailyLogin` | success | "Welcome back! +{xp} XP" |
+| Achievement claim | `AchievementGrid` | success | "Achievement unlocked!" |
+| Thread created | `CommunityPageContent` | success | "Thread posted" |
+| Reply posted | `ThreadDetailContent` | success | "Reply posted" |
+| API errors | Various | error | Error message from response |
+| Rate limited | Various | warning | "Too many requests" |
+
+### ClaimXpPopup (Daily Streak Only)
+
+The `ClaimXpPopup` component provides a celebratory full-screen overlay specifically for daily login streak XP claims. It is rendered inside `DailyLoginStreak.tsx` and is intentionally NOT used for other XP events (those use `goeyToast` for non-disruptive feedback).
 
 ---
 

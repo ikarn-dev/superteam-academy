@@ -162,7 +162,7 @@ Most endpoints require a valid JWT session. Authentication is verified via `getS
         "id": "uuid",
         "name": "string",
         "email": "string",
-        "role": "student|instructor",
+        "role": "student",
         "walletAddress": "base58|null",
         "onboardingComplete": true
     }
@@ -585,8 +585,9 @@ graph TB
 | POST | `/api/cron/sync-xp-snapshots` | Cron Secret | Sync XP snapshots for leaderboard |
 | POST | `/api/events` | Internal | Process on-chain events |
 | POST | `/api/queue` | Internal | Process queued jobs |
-| POST | `/api/code/execute` | JWT | Execute code in sandbox |
-| GET | `/api/cms/course` | None | Fetch course content from CMS |
+| POST | `/api/code/execute` | JWT | Execute code in sandbox (Judge0 CE proxy) |
+| GET | `/api/cms/course` | None | Fetch single course content from CMS |
+| GET | `/api/cms/courses` | None | Bulk course summaries (title, description, thumbnail) |
 
 ---
 

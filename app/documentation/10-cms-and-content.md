@@ -30,7 +30,8 @@ graph TB
         CLIENT["@sanity/client<br/>Server-side queries"]
         IMAGE["@sanity/image-url<br/>Responsive images"]
         PREVIEW["Preview Mode<br/>Draft content viewing"]
-        CMS_API["GET /api/cms/course<br/>Content endpoint"]
+        CMS_API["GET /api/cms/course<br/>Single course content"]
+        CMS_BULK["GET /api/cms/courses<br/>Bulk listing summaries"]
     end
 
     subgraph Pages["Frontend Pages"]
@@ -91,42 +92,69 @@ classDiagram
         +string difficulty
         +number trackId
         +string onChainCourseId
-        +Lesson[] lessons
+        +Module[] modules
         +string[] tags
-        +reference author
+        +reference instructor
+    }
+
+    class Module {
+        +string title
+        +text description
+        +number order
+        +Lesson[] lessons
     }
 
     class Lesson {
         +string title
         +slug slug
+        +string type
         +number order
+        +number duration
         +markdown content
-        +CodeBlock[] codeBlocks
-        +string instructions
+        +string videoUrl
+        +file videoFile
+        +Challenge challenge
+        +Quiz quiz
+        +string[] hints
+    }
+
+    class Challenge {
+        +string language
+        +markdown instructions
+        +CodeBlock starterCode
+        +CodeBlock solutionCode
+        +TestCase[] testCases
+    }
+
+    class TestCase {
+        +string name
+        +string input
         +string expectedOutput
-        +string language
+        +boolean isHidden
     }
 
-    class CodeBlock {
-        +string language
-        +string code
-        +string filename
-        +boolean editable
-    }
-
-    Course_CMS --> Lesson : contains
-    Lesson --> CodeBlock : includes
+    Course_CMS --> Module : contains
+    Module --> Lesson : contains
+    Lesson --> Challenge : has (type=challenge)
 ```
+
+### Lesson Types
+
+| Type | Sanity Fields | Rendered By |
+|------|--------------|-------------|
+| `content` | `content` (markdown) | `LessonContent` + `CodeEditor` |
+| `video` | `videoUrl` (YouTube/Vimeo) or `videoFile` (mp4/webm/mov upload) | `LessonContent` + `VideoPlayer` |
+| `challenge` | `challenge.language`, `instructions`, `starterCode`, `solutionCode`, `testCases[]` | `LessonContent` + `ChallengePanel` |
 
 ### Content Types
 
 | Schema | Purpose | Key Fields |
 |---|---|---|
-| Course | Course definition and metadata | title, slug, description, lessons, trackId |
-| Lesson | Individual lesson content | title, content (markdown), code blocks, order |
-| Author | Course creator profile | name, bio, avatar, social links |
-| Category | Course categorization | name, slug, description |
-| Challenge | Daily challenge definitions | title, description, type, reward |
+| Course | Course definition and metadata | title, slug, description, modules, trackId, onChainCourseId |
+| Module | Course section grouping | title, description, order, lessons |
+| Lesson | Individual lesson (3 types) | title, type (content/video/challenge), content, videoUrl, challenge |
+| Instructor | Course creator profile (CMS metadata) | name, bio, avatar, social links |
+| Track | Learning track definition | name, slug, onChainTrackId, color, icon |
 | Announcement | Platform announcements | title, body, priority, expiry |
 
 ---
@@ -137,17 +165,17 @@ classDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Instructor
+    participant Admin
     participant Studio as Sanity Studio
     participant CDN as Sanity CDN
     participant API as Next.js API
     participant Frontend
 
-    Instructor->>Studio: Create/edit course content
+    Admin->>Studio: Create/edit course content
     Studio->>CDN: Publish content
 
     Frontend->>API: GET /api/cms/course?slug=intro-to-anchor
-    API->>CDN: GROQ query for course + lessons
+    API->>CDN: GROQ query for course + modules + lessons
     CDN-->>API: Structured content + image URLs
     API->>API: Transform for frontend consumption
     API-->>Frontend: Course content with lessons
