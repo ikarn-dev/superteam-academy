@@ -12,6 +12,7 @@ declare module 'next-auth' {
             onboardingComplete?: boolean;
             isAdmin?: boolean;
         };
+        provider?: string;
         linkedAccounts?: { provider: string; provider_id: string }[];
         walletAddress?: string;
     }

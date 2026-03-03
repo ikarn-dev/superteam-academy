@@ -354,6 +354,11 @@ export const authOptions: NextAuthOptions = {
             if (token.userId) {
                 session.user.id = token.userId as string;
 
+                // Expose auth provider so client can detect signup method (wallet/github/google)
+                if (token.provider) {
+                    session.provider = token.provider as string;
+                }
+
                 // Use cached linked accounts from JWT instead of DB query per request
                 session.linkedAccounts = (token.linkedAccounts as { provider: string; provider_id: string }[]) || [];
 

@@ -28,11 +28,12 @@ export default function OnboardingPage() {
     const [submitting, setSubmitting] = useState(false);
 
     // Determine if user signed up via wallet (no wallet-link step needed)
-    const s = session as Record<string, unknown> | null;
-    const hasWalletAddress = !!(s?.walletAddress);
-    const linkedAccounts = (s?.linkedAccounts as { provider: string }[] | undefined) || [];
-    const hasWalletLinked = linkedAccounts.some((a) => a.provider === 'wallet');
-    const isWalletUser = hasWalletAddress || hasWalletLinked;
+    // Primary: check the auth provider stored in JWT (most reliable)
+    // Fallback: check walletAddress or linked_accounts for robustness
+    const isWalletUser =
+        session?.provider === 'wallet' ||
+        !!(session?.walletAddress) ||
+        (session?.linkedAccounts ?? []).some((a) => a.provider === 'wallet');
 
     // Calculate total steps and current index
     const steps: Step[] = isWalletUser ? ['profile'] : ['profile', 'wallet-link'];
