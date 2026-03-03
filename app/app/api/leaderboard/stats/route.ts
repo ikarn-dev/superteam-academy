@@ -2,12 +2,18 @@
  * GET /api/leaderboard/stats — Global platform statistics.
  * Total XP includes both on-chain (from snapshots) and off-chain (from profiles).
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/backend/prisma';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 import type { LeaderboardStats } from '@/context/types/leaderboard';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const ip = getClientIp(request);
+        const { success, response } = await checkRateLimit(`leaderboard-stats:${ip}`, 'lenient');
+        if (!success) return response as NextResponse;
+
         const [totalUsers, totalCompletions, offchainAgg, latestSnapshots] = await Promise.all([
             prisma.profiles.count({
                 where: { deleted_at: null },

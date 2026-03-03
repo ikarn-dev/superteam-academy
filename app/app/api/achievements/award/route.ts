@@ -26,9 +26,15 @@ import { PROGRAM_ID, XP_MINT } from '@/context/solana/constants';
 import { ensureXpAta } from '@/context/solana/xp';
 import { getRpcUrl, safeErrorDetails } from '@/context/env';
 import { deriveAchievementTypePda } from '@/context/solana/pda';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
+        const ip = getClientIp(request);
+        const { success: rlOk, response: rlResponse } = await checkRateLimit(`achievement-award:${ip}`);
+        if (!rlOk) return rlResponse as NextResponse;
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

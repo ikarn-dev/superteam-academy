@@ -1,7 +1,7 @@
 /**
  * GET /api/leaderboard/rank — Current user's rank with dual-XP breakdown.
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/backend/auth/auth-options';
@@ -9,9 +9,15 @@ import { prisma } from '@/backend/prisma';
 import type { UserRank } from '@/context/types/leaderboard';
 import { getXpBalance, getXpBalances } from '@/context/solana/xp';
 import { getRpcUrl } from '@/context/env';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
+        const ip = getClientIp(request);
+        const { success, response } = await checkRateLimit(`leaderboard-rank:${ip}`, 'lenient');
+        if (!success) return response as NextResponse;
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

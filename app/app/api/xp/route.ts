@@ -4,16 +4,22 @@
  * Lightweight endpoint for the header XP badge.
  * Only fetches the current user's data (1 DB query + 1 optional RPC call).
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/backend/auth/auth-options';
 import { prisma } from '@/backend/prisma';
 import { getXpBalance } from '@/context/solana/xp';
 import { getRpcUrl } from '@/context/env';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
+        const ip = getClientIp(request);
+        const { success, response } = await checkRateLimit(`xp:${ip}`, 'lenient');
+        if (!success) return response as NextResponse;
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

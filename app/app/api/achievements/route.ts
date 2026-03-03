@@ -3,15 +3,21 @@
  * Checks DB for awarded achievements and streak/activity data for eligibility.
  * Adds badge image path and on-chain claim state.
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/backend/auth/auth-options';
 import { ACHIEVEMENTS } from '@/backend/achievements';
 import { prisma } from '@/backend/prisma';
 import type { Achievement } from '@/context/types/achievement';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
+        const ip = getClientIp(request);
+        const { success, response } = await checkRateLimit(`achievements:${ip}`, 'lenient');
+        if (!success) return response as NextResponse;
+
         const session = await getServerSession(authOptions);
 
         // Return definitions with unlocked=false if not authenticated

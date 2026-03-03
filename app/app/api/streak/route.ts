@@ -3,15 +3,21 @@
  *
  * Returns the current user's streak data + recent activity (last 90 days) + milestone status.
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/backend/auth/auth-options';
 import { prisma } from '@/backend/prisma';
 import { STREAK_MILESTONES, DEFAULT_STREAK } from '@/context/types/streak';
 import type { Streak, StreakDay, StreakMilestone, StreakData } from '@/context/types/streak';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const ip = getClientIp(request);
+        const { success, response } = await checkRateLimit(`streak:${ip}`, 'lenient');
+        if (!success) return response as NextResponse;
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

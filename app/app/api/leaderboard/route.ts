@@ -9,6 +9,8 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { checkRateLimit } from '@/backend/auth/rate-limit';
+import { getClientIp } from '@/backend/auth/ip';
 import { prisma } from '@/backend/prisma';
 import type { LeaderboardEntry } from '@/context/types/leaderboard';
 import { calculateLevel } from '@/context/xp-calculations';
@@ -17,6 +19,10 @@ import { getRpcUrl } from '@/context/env';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
+        const ip = getClientIp(request);
+        const { success, response } = await checkRateLimit(`leaderboard:${ip}`, 'lenient');
+        if (!success) return response as NextResponse;
+
         const { searchParams } = new URL(request.url);
         const rawLimit = searchParams.get('limit') || '100';
         const limit = Math.min(Math.max(parseInt(rawLimit, 10) || 100, 1), 500);
