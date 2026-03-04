@@ -21,7 +21,7 @@ interface LessonListProps {
 export function LessonList({ courseId, lessons, progress, isEnrolled }: LessonListProps) {
     const t = useTranslations('lesson');
     return (
-        <div className="mt-8">
+        <div>
             <h2 className="text-lg font-bold text-foreground mb-4 font-display">{t('courseContent')}</h2>
             <div className="flex flex-col gap-1">
                 {lessons.map((lesson, i) => {
