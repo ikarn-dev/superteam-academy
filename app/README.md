@@ -22,7 +22,7 @@
 
 | Resource | Link |
 |---|---|
-| Production App | []() |
+| Production App | [https://superteam-academy-lyart.vercel.app](https://superteam-academy-lyart.vercel.app) |
 | GitHub Repository | [github.com/solanabr/superteam-academy](https://github.com/solanabr/superteam-academy) |
 | On-Chain Program (Original) | [ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf](https://explorer.solana.com/address/ACADBRCB3zGvo1KSCbkztS33ZNzeBv2d7bqGceti3ucf?cluster=devnet) |
 | XP Token Mint (Original) | [xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3](https://explorer.solana.com/address/xpXPUjkfk7t4AJF1tYUoyAYxzuM5DhinZWS1WjfjAu3?cluster=devnet) |
