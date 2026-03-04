@@ -31,8 +31,8 @@ export function ClaimXpPopup({ xpAmount, streakDay, onClose }: ClaimXpPopupProps
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
 
-            {/* Confetti — fullscreen behind the card */}
-            <div className="absolute inset-0 pointer-events-none">
+            {/* Confetti — fullscreen above the card */}
+            <div className="absolute inset-0 z-20 pointer-events-none">
                 <DotLottieReact
                     src="/lotties/Confetti.lottie"
                     autoplay

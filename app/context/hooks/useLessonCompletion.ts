@@ -91,8 +91,9 @@ export function useLessonCompletion(courseId: string) {
         },
         onSuccess: () => {
             setCompletionStep('idle');
-            goeyToast.success('Lesson Completed! ✨', {
+            goeyToast.success('Lesson Completed!', {
                 description: 'XP earned — keep going!',
+                duration: 2000,
             });
             queryClient.invalidateQueries({ queryKey: ['course-progress', courseId] });
             queryClient.invalidateQueries({ queryKey: ['xpBalance'] });
@@ -128,8 +129,9 @@ export function useLessonCompletion(courseId: string) {
         },
         onSuccess: () => {
             setCompletionStep('idle');
-            goeyToast.success('Lesson Completed! ✨', {
+            goeyToast.success('Lesson Completed!', {
                 description: 'XP earned — keep going!',
+                duration: 3000,
             });
             queryClient.invalidateQueries({ queryKey: ['enrollment', courseId] });
             queryClient.invalidateQueries({ queryKey: ['course-progress', courseId] });
@@ -139,6 +141,7 @@ export function useLessonCompletion(courseId: string) {
             setCompletionStep('idle');
             goeyToast.error('Lesson Failed', {
                 description: error.message,
+                duration: 3000,
             });
         },
     });
