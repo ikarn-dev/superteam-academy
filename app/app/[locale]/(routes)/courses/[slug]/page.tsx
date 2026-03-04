@@ -2,14 +2,16 @@
  * Course Detail page — /courses/[slug]
  *
  * Shows course overview, lesson list, enrollment CTA, and progress.
- * Uses on-chain data (Course PDA) + off-chain content (Arweave).
+ * Uses on-chain data (Course PDA) + off-chain content (Sanity CMS / Arweave).
  *
- * In mock mode, auto-enrolls the user so all lessons are accessible
- * without a wallet or on-chain transaction.
+ * In mock mode, enrollment is explicit — user clicks "Enroll Now" in the
+ * sidebar which triggers a mock flow with goey-toast. Email users can
+ * enroll without wallet. Enrollment state is tracked locally.
  */
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useState, useCallback } from 'react';
 import { Link } from '@/context/i18n/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useCourseDetails } from '@/context/hooks/useCourseDetails';
@@ -34,9 +36,18 @@ export default function CourseDetailPage() {
     const { enroll, isEnrolling, error: enrollError } = useEnroll(courseId);
     const { finalize, isFinalizing, isIssuingCredential, credentialResult, error: finalizeError } = useCourseFinalization(courseId);
 
+    // Mock enrollment state — local, separate from real hooks
+    const [isMockEnrolled, setIsMockEnrolled] = useState(false);
+    const handleMockEnroll = useCallback(() => {
+        setIsMockEnrolled(true);
+    }, []);
+
+    // Derive enrollment from either mock or real state
+    const isEnrolled = MOCK_MODE ? isMockEnrolled : (progress.data?.isEnrolled ?? false);
+
     if (isLoading) {
         return (
-            <div className="max-w-[1100px] mx-auto px-4 sm:px-8 py-8">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8">
                 <nav className="flex items-center gap-4 mb-8">
                     <Link href="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                         <ArrowLeft className="w-4 h-4 inline mr-1" />
@@ -46,14 +57,14 @@ export default function CourseDetailPage() {
                         Superteam Academy
                     </span>
                 </nav>
-                <div className="h-[200px] rounded-2xl bg-muted/40 animate-pulse mb-8" />
+                <div className="h-[200px] rounded-3xl bg-muted/40 animate-pulse mb-8" />
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
                     <div className="flex flex-col gap-2">
-                        <div className="h-[72px] rounded-xl bg-muted/40 animate-pulse" />
-                        <div className="h-[72px] rounded-xl bg-muted/40 animate-pulse" />
-                        <div className="h-[72px] rounded-xl bg-muted/40 animate-pulse" />
+                        <div className="h-[72px] rounded-2xl bg-muted/40 animate-pulse" />
+                        <div className="h-[72px] rounded-2xl bg-muted/40 animate-pulse" />
+                        <div className="h-[72px] rounded-2xl bg-muted/40 animate-pulse" />
                     </div>
-                    <div className="h-[400px] rounded-2xl bg-muted/40 animate-pulse" />
+                    <div className="h-[400px] rounded-3xl bg-muted/40 animate-pulse" />
                 </div>
             </div>
         );
@@ -61,7 +72,7 @@ export default function CourseDetailPage() {
 
     if (error || !course) {
         return (
-            <div className="max-w-[1100px] mx-auto px-4 sm:px-8 py-8">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8">
                 <nav className="flex items-center gap-4 mb-8">
                     <Link href="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                         <ArrowLeft className="w-4 h-4 inline mr-1" />
@@ -82,11 +93,8 @@ export default function CourseDetailPage() {
         );
     }
 
-    // In mock mode, auto-enroll without wallet or on-chain transaction
-    const isEnrolled = MOCK_MODE ? true : (progress.data?.isEnrolled ?? false);
-
     return (
-        <div className="max-w-[1100px] mx-auto px-4 sm:px-8 py-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8">
             <nav className="flex items-center gap-4 mb-8">
                 <Link href="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1">
                     <ArrowLeft className="w-4 h-4" />
@@ -120,8 +128,10 @@ export default function CourseDetailPage() {
                     finalizeError={finalizeError}
                     onEnroll={() => enroll(undefined)}
                     onFinalize={() => finalize()}
-                    walletConnected={MOCK_MODE ? true : !!publicKey}
+                    walletConnected={MOCK_MODE ? !!publicKey : !!publicKey}
                     isMockMode={MOCK_MODE}
+                    isMockEnrolled={isMockEnrolled}
+                    onMockEnroll={handleMockEnroll}
                 />
             </div>
         </div>

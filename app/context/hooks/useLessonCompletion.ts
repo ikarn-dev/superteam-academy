@@ -299,7 +299,7 @@ export function useCourseProgress(courseId: string, totalLessons: number) {
                     progressPercent,
                     completedIndices,
                     isFullyCompleted,
-                    isEnrolled: true, // auto-enrolled in mock mode
+                    isEnrolled: false, // enrollment managed by parent page via local state
                 };
             }
 

@@ -33,7 +33,7 @@ export function LessonList({ courseId, lessons, progress, isEnrolled }: LessonLi
                     return (
                         <div key={lesson.index} id={`lesson-${lesson.index}`}>
                             {isLocked ? (
-                                <div className="flex items-center gap-4 px-4 sm:px-5 py-4 rounded-xl bg-card/30 border border-border/50 opacity-50 cursor-not-allowed">
+                                <div className="flex items-center gap-4 px-4 sm:px-5 py-4 rounded-2xl bg-card/30 border border-border/50 opacity-50 cursor-not-allowed">
                                     <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground text-sm font-bold shrink-0">
                                         <Lock className="w-4 h-4" />
                                     </div>
@@ -45,14 +45,14 @@ export function LessonList({ courseId, lessons, progress, isEnrolled }: LessonLi
                             ) : (
                                 <Link
                                     href={`/courses/${courseId}/lessons/${lesson.index}`}
-                                    className={`group flex items-center gap-4 px-4 sm:px-5 py-4 rounded-xl border transition-all duration-200 hover:shadow-sm ${completed
-                                            ? 'bg-brand-green-emerald/5 border-brand-green-emerald/15 hover:border-brand-green-emerald/30'
-                                            : 'bg-card/30 border-border/50 hover:border-border hover:bg-card/60'
+                                    className={`group flex items-center gap-4 px-4 sm:px-5 py-4 rounded-2xl border transition-all duration-200 hover:shadow-sm ${completed
+                                        ? 'bg-brand-green-emerald/5 border-brand-green-emerald/15 hover:border-brand-green-emerald/30'
+                                        : 'bg-card/30 border-border/50 hover:border-border hover:bg-card/60'
                                         }`}
                                 >
                                     <div className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold shrink-0 ${completed
-                                            ? 'bg-brand-green-emerald/15 text-brand-green-emerald'
-                                            : 'bg-muted/60 text-muted-foreground'
+                                        ? 'bg-brand-green-emerald/15 text-brand-green-emerald'
+                                        : 'bg-muted/60 text-muted-foreground'
                                         }`}>
                                         {completed ? <Check className="w-4 h-4" /> : i + 1}
                                     </div>

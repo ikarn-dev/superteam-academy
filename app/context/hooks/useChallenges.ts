@@ -20,6 +20,10 @@ export interface ChallengeItem {
     instructions: string;
     difficulty: Difficulty;
     xpReward: number;
+    /** Track ID for icon area color and SVG icon */
+    trackId: number;
+    /** Track level badge */
+    trackLevel: number;
     /** Pre-built URL to the lesson page */
     linkHref: string;
 }
@@ -60,6 +64,8 @@ export function useChallenges() {
                                     instructions: lesson.challenge.instructions,
                                     difficulty: course.difficulty,
                                     xpReward: lesson.xpReward || course.xpPerLesson,
+                                    trackId: course.trackId,
+                                    trackLevel: course.trackLevel,
                                     linkHref: `/courses/${course.courseId}/lessons/${lessonGlobalIndex}`,
                                 });
                             }

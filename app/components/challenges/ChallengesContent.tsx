@@ -37,7 +37,7 @@ export function ChallengesContent() {
             : challenges.filter((c) => c.difficulty === activeFilter);
 
     return (
-        <div className="max-w-7xl mx-auto space-y-5 sm:space-y-8">
+        <div className="max-w-[1400px] mx-auto space-y-5 sm:space-y-8">
             {/* Banner */}
             <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] md:aspect-[4/1] rounded-2xl overflow-hidden">
                 <Image
@@ -141,10 +141,11 @@ export function ChallengesContent() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filtered.map((challenge) => (
+                    {filtered.map((challenge, i) => (
                         <ChallengeCard
                             key={`${challenge.courseId}-${challenge.lessonIndex}`}
                             challenge={challenge}
+                            index={i}
                         />
                     ))}
                 </div>

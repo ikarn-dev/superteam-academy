@@ -69,7 +69,7 @@ const MOCK_TRACK_2: SanityTrack = {
     slug: { current: 'defi-specialist' },
     onChainTrackId: 2,
     description: 'Learn DeFi protocols and token mechanics',
-    icon: '💰',
+    icon: '$',
     color: '#14F195',
 };
 
@@ -77,7 +77,7 @@ const MOCK_TRACK_2: SanityTrack = {
 
 const HELLO_SOLANA_CHALLENGE: SanityChallenge = {
     language: 'rust',
-    instructions: `# Hello Solana! 🚀
+    instructions: `# Hello Solana!
 
 Write a function called \`hello_solana\` that returns the string \`"Hello, Solana!"\`.
 
@@ -515,23 +515,23 @@ const COURSE_1_LESSONS: SanityLesson[] = [
         order: 0,
         duration: 900,
         xpReward: 100,
-        content: `# What is Solana? ◎
+        content: `# What is Solana?
 
 Solana is a high-performance blockchain designed for mass adoption. It processes thousands of transactions per second (TPS) with sub-second finality, all while keeping costs incredibly low.
 
 ## Key Features
 
-### ⚡ Speed
+### Speed
 Solana can process **65,000+ TPS** thanks to its unique **Proof of History (PoH)** consensus mechanism. Each transaction costs a fraction of a cent.
 
-### 🏗️ Architecture
+### Architecture
 - **Proof of History (PoH):** A cryptographic clock that orders transactions before consensus
 - **Tower BFT:** An optimized Byzantine Fault Tolerance consensus
 - **Gulf Stream:** Mempool-less transaction forwarding protocol
 - **Sealevel:** Parallel smart contract runtime
 - **Turbine:** Block propagation protocol
 
-### 💻 Programs
+### Programs
 On Solana, smart contracts are called **Programs**. They're written in **Rust** (or C) and compiled to BPF bytecode. Programs are stateless — all state is stored in separate **Accounts**.
 
 \`\`\`rust
@@ -550,7 +550,7 @@ pub mod hello_world {
 }
 \`\`\`
 
-### 🔑 Key Concepts
+### Key Concepts
 | Concept | Description |
 |---------|-------------|
 | **Accounts** | On-chain storage containers that hold data and SOL |
@@ -566,7 +566,7 @@ pub mod hello_world {
 3. **Composability** — Programs can call other programs
 4. **Growing ecosystem** — DeFi, NFTs, Gaming, DePIN, and more
 
-> 💡 **Next up:** Test your understanding with a quick quiz!`,
+> **Next up:** Test your understanding with a quick quiz!`,
     },
     {
         _id: 'mock-lesson-1-2',
@@ -604,7 +604,7 @@ pub mod hello_world {
         order: 3,
         duration: 900,
         xpReward: 100,
-        content: `# Understanding Solana Accounts 🏦
+        content: `# Understanding Solana Accounts
 
 On Solana, **everything is an account**. Accounts are the fundamental building blocks that store data, hold SOL balances, and define program state.
 
@@ -647,9 +647,9 @@ let (pda, bump) = Pubkey::find_program_address(
 \`\`\`
 
 PDAs are powerful because:
-- 🔒 No private key exists — only the program can sign
-- 📍 Deterministic — same seeds always produce the same address
-- 🗄️ Perfect for storing program state
+- No private key exists — only the program can sign
+- Deterministic — same seeds always produce the same address
+- Perfect for storing program state
 
 ## Account Types in Superteam Academy
 
@@ -659,7 +659,7 @@ PDAs are powerful because:
 | Course | \`["course", course_id]\` | Course metadata |
 | Enrollment | \`["enrollment", course, learner]\` | Tracks progress |
 
-> 📝 **Next up:** Put your PDA knowledge to practice with a coding challenge!`,
+> **Next up:** Put your PDA knowledge to practice with a coding challenge!`,
     },
     {
         _id: 'mock-lesson-1-5',
@@ -701,7 +701,7 @@ const COURSE_2_LESSONS: SanityLesson[] = [
         order: 0,
         duration: 1200,
         xpReward: 150,
-        content: `# SPL Tokens on Solana 🪙
+        content: `# SPL Tokens on Solana
 
 The **Solana Program Library (SPL)** Token program is the standard for creating fungible and non-fungible tokens on Solana. It's the equivalent of ERC-20 on Ethereum, but with significantly lower costs.
 
@@ -748,7 +748,7 @@ Our XP token uses Token-2022 with the **non-transferable** extension:
 const xpMint = new PublicKey("HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a");
 \`\`\`
 
-> 💡 **Next:** Build a token swap calculator using the constant product formula!`,
+> **Next:** Build a token swap calculator using the constant product formula!`,
     },
     {
         _id: 'mock-lesson-2-2',
@@ -775,7 +775,7 @@ const xpMint = new PublicKey("HA5ZraV52nBSGdnDfEFvi8683qXHPvaR14NTBhBzxe8a");
         order: 2,
         duration: 1200,
         xpReward: 150,
-        content: `# Automated Market Makers (AMMs) 🤖
+        content: `# Automated Market Makers (AMMs)
 
 AMMs replaced traditional order books with mathematical pricing formulas. Instead of matching buyers and sellers, AMMs use **liquidity pools** and bonding curves.
 
@@ -821,7 +821,7 @@ When you provide liquidity, the pool rebalances as prices change:
 - **Orca** — Concentrated liquidity (Whirlpools)
 - **Jupiter** — Aggregator (routes across all DEXes)
 
-> 📝 **Next:** Calculate your pool position value!`,
+> **Next:** Calculate your pool position value!`,
     },
     {
         _id: 'mock-lesson-2-4',

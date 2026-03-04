@@ -1,79 +1,122 @@
 /**
- * ChallengeCard — Individual challenge card with language badge,
- * difficulty indicator, XP reward, and link to the lesson page.
+ * ChallengeCard — matches CourseCard design exactly.
  *
- * Uses lucide-react icons (no emojis), brand fonts (Supreme/Quilon),
- * and brand color variables.
+ * Same layout: glass-effect container, solid-color icon area on top
+ * with track icon, centered title, difficulty/XP badges, footer with
+ * Start Challenge button. No hover animations or gradients on cards.
  */
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Code2, Zap, ArrowRight, BookOpen } from 'lucide-react';
+import { ArrowRight, Code2, Zap } from 'lucide-react';
 import { Link } from '@/context/i18n/navigation';
-import { DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/context/types/course';
 import type { ChallengeItem } from '@/context/hooks/useChallenges';
+import type { Difficulty } from '@/context/types/course';
+import { getTrackName } from '@/context/course/tracks';
+import { CourseDifficultyBadge } from '@/components/course/CourseDifficultyBadge';
+import { CourseStatsBadge } from '@/components/course/CourseStatsBadge';
+import { getTrackIconComponent } from '@/components/course/CourseTrackIcons';
 
 interface ChallengeCardProps {
     challenge: ChallengeItem;
+    index?: number;
 }
 
-export function ChallengeCard({ challenge }: ChallengeCardProps) {
+/** Same dashboard card colors as CourseCard */
+const CARD_COLORS = [
+    { solid: 'var(--dash-card-peach)', rgb: '255,203,164' },
+    { solid: 'var(--dash-card-mint)', rgb: '168,240,204' },
+    { solid: 'var(--dash-card-lavender)', rgb: '196,176,240' },
+    { solid: 'var(--dash-card-pink)', rgb: '98,201,183' },
+    { solid: 'var(--dash-card-mauve)', rgb: '240,168,216' },
+] as const;
+
+export function ChallengeCard({ challenge, index = 0 }: ChallengeCardProps) {
     const t = useTranslations('challenges.card');
+    const tc = useTranslations('courses');
+    const trackName = getTrackName(challenge.trackId);
+    const palette = CARD_COLORS[index % CARD_COLORS.length];
+    const TrackIcon = getTrackIconComponent(challenge.trackId);
 
     return (
-        <div className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-accent/50">
-            {/* Top accent bar */}
-            <div className="h-1 w-full bg-gradient-to-r from-brand-green-emerald to-brand-yellow" />
+        <Link
+            href={challenge.linkHref}
+            className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-zinc-200/80 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 shadow-md ring-1 ring-black/[0.04] dark:ring-white/[0.04] w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            id={`challenge-card-${challenge.courseId}-${challenge.lessonIndex}`}
+            aria-label={`${challenge.language} challenge: ${challenge.lessonTitle}`}
+        >
+            {/* Subtle color tint overlay */}
+            <div
+                className="pointer-events-none absolute inset-0 z-0"
+                style={{ backgroundColor: `rgba(${palette.rgb}, 0.1)` }}
+            />
 
-            <div className="flex flex-col flex-1 p-5 gap-4">
-                {/* Header: Language badge + Difficulty */}
-                <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent/10 text-accent">
-                        <Code2 className="w-3.5 h-3.5" />
-                        <span className="text-xs font-semibold font-supreme uppercase tracking-wide">
-                            {challenge.language}
+            {/* Glass shimmer overlay */}
+            <div
+                className="pointer-events-none absolute inset-0 z-0"
+                style={{
+                    background: `linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%, rgba(255,255,255,0.08) 100%)`,
+                    maskImage: 'linear-gradient(135deg, black 40%, transparent 60%)',
+                    WebkitMaskImage: 'linear-gradient(135deg, black 40%, transparent 60%)',
+                }}
+            />
+
+            {/* Inner content — above shimmer */}
+            <div className="relative z-10 flex flex-col h-full p-3.5 sm:p-4 gap-4 sm:gap-5">
+
+                {/* Solid-color icon area */}
+                <div
+                    className="w-full flex flex-col items-center justify-center rounded-[1.75rem] sm:rounded-[2rem] py-8 sm:py-10 relative"
+                    style={{ backgroundColor: palette.solid }}
+                >
+                    {/* Track name + level badges */}
+                    <div className="absolute top-3 sm:top-4 left-4 sm:left-5 right-4 sm:right-5 flex items-center justify-between">
+                        <span
+                            className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-supreme"
+                            style={{ color: '#1b231d' }}
+                        >
+                            {trackName}
+                        </span>
+                        <span
+                            className="text-[9px] sm:text-[10px] font-medium font-supreme px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: 'rgba(0,0,0,0.1)', color: '#1b231d' }}
+                        >
+                            {tc('level', { level: challenge.trackLevel })}
                         </span>
                     </div>
-                    <span className={`text-[0.65rem] font-semibold font-supreme px-2 py-0.5 rounded-full border ${DIFFICULTY_COLORS[challenge.difficulty]}`}>
-                        {DIFFICULTY_LABELS[challenge.difficulty]}
-                    </span>
+
+                    {/* Custom SVG icon */}
+                    <TrackIcon size={48} className="drop-shadow-sm" />
                 </div>
 
-                {/* Title */}
-                <h3 className="font-display text-base font-bold text-card-foreground leading-snug line-clamp-2">
-                    {challenge.lessonTitle}
-                </h3>
+                {/* Content area */}
+                <div className="flex flex-col gap-2.5 flex-1">
+                    {/* Challenge title — centered like CourseCard */}
+                    <h3 className="text-sm sm:text-base font-bold font-supreme text-foreground text-center leading-snug m-0 line-clamp-2">
+                        {challenge.lessonTitle}
+                    </h3>
 
-                {/* Course name */}
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <BookOpen className="w-3.5 h-3.5 flex-shrink-0" />
-                    <span className="text-xs font-supreme truncate">
+                    {/* Course name */}
+                    <p className="text-[11px] sm:text-xs text-muted-foreground font-supreme text-center line-clamp-1 leading-relaxed">
                         {challenge.courseTitle}
-                    </span>
-                </div>
+                    </p>
 
-                {/* Instructions preview */}
-                <p className="text-xs text-muted-foreground font-supreme leading-relaxed line-clamp-2 flex-1">
-                    {challenge.instructions}
-                </p>
+                    {/* Meta badges */}
+                    <div className="flex flex-wrap items-center justify-center gap-1.5">
+                        <CourseDifficultyBadge difficulty={challenge.difficulty} />
+                        <CourseStatsBadge Icon={Code2} label={challenge.language.toUpperCase()} />
+                        <CourseStatsBadge Icon={Zap} label={`${challenge.xpReward} XP`} variant="xp" />
+                    </div>
 
-                {/* Footer: XP + CTA */}
-                <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                    <div className="flex items-center gap-1.5 text-brand-yellow">
-                        <Zap className="w-4 h-4" />
-                        <span className="text-sm font-bold font-supreme">
-                            {t('xpReward', { xp: challenge.xpReward })}
+                    {/* Footer — Start Challenge button */}
+                    <div className="flex items-center justify-center mt-auto pt-3 border-t border-border dark:border-zinc-700">
+                        <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold font-supreme text-accent-foreground bg-accent px-3 py-1 rounded-full">
+                            {t('startChallenge')}
+                            <ArrowRight className="w-3.5 h-3.5" />
                         </span>
                     </div>
-                    <Link
-                        href={challenge.linkHref}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold font-supreme bg-brand-green-emerald text-white transition-all duration-200 hover:bg-brand-green-dark hover:gap-2.5"
-                    >
-                        {t('startChallenge')}
-                        <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

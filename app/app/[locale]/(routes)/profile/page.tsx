@@ -378,8 +378,56 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* Daily Login Streak Calendar */}
-                    <DailyLoginStreak variant="lime" />
+                    {/* Daily Login Streak Calendar — scoped overrides for narrow sidebar */}
+                    <div className="profile-streak-card">
+                        <DailyLoginStreak variant="lime" />
+                        <style jsx global>{`
+                            /* Bottom stats bar: stack vertically in narrow sidebar */
+                            .profile-streak-card > div > div:last-of-type {
+                                flex-wrap: wrap;
+                                gap: 0;
+                                padding: 6px 8px;
+                                font-size: 9px;
+                            }
+                            /* Stats row: Current + Max side-by-side */
+                            .profile-streak-card > div > div:last-of-type > div:not(.flex-1):not(button) {
+                                font-size: 9px;
+                            }
+                            .profile-streak-card > div > div:last-of-type > div:not(.flex-1):not(button) strong {
+                                font-size: 10px;
+                            }
+                            /* Divider shorter */
+                            .profile-streak-card > div > div:last-of-type > div.w-px {
+                                height: 10px;
+                                margin-left: 4px;
+                                margin-right: 4px;
+                            }
+                            /* Spacer: force line break after stats */
+                            .profile-streak-card > div > div:last-of-type > .flex-1 {
+                                display: none;
+                            }
+                            /* Claim button: full width on its own row, dark bg for contrast */
+                            .profile-streak-card > div > div:last-of-type > button {
+                                width: 100%;
+                                justify-content: center;
+                                margin-top: 6px;
+                                padding: 5px 10px;
+                                font-size: 10px;
+                                border-radius: 8px;
+                                background-color: #1b231d !important;
+                                color: #ffffff !important;
+                            }
+                            /* Calendar day cells: slightly smaller */
+                            .profile-streak-card .aspect-square {
+                                font-size: 9px;
+                            }
+                            .profile-streak-card .aspect-square span[role="img"] {
+                                width: 24px !important;
+                                height: 24px !important;
+                                font-size: 11px !important;
+                            }
+                        `}</style>
+                    </div>
 
                     {/* Meta info */}
                     <div className="rounded-2xl p-4 space-y-3" style={{ backgroundColor: 'var(--profile-side-bg)', color: 'var(--profile-side-text)', border: '1px solid var(--profile-side-border)', boxShadow: 'var(--profile-side-shadow)' }}>

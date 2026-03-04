@@ -50,6 +50,8 @@ export function useCourseDetails(courseId: string | undefined) {
                                     hints: l.hints,
                                     videoUrl: l.videoUrl,
                                     videoFileRef: l.videoFile?.asset?._ref,
+                                    // Pass content through for mock mode (inline lesson text)
+                                    content: (l as unknown as Record<string, unknown>).content as string | undefined,
                                     quiz: l.quiz
                                         ? {
                                             questions: l.quiz.questions.map((q, qi) => ({

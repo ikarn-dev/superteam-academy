@@ -116,16 +116,18 @@ export function QuizSection({ quiz, onPass, disabled = false }: QuizSectionProps
                     {t('submitAnswers')}
                 </button>
             ) : (
-                <div className={`quiz-result ${passed ? 'result-pass' : 'result-fail'}`}>
-                    <div className="result-text">
-                        {passed ? t('quizPassed', { score, threshold: quiz.passThreshold }) : t('quizFailed', { score, threshold: quiz.passThreshold })}
+                <>
+                    <div className={`quiz-result ${passed ? 'result-pass' : 'result-fail'}`}>
+                        <div className="result-text">
+                            {passed ? t('quizPassed', { score, threshold: quiz.passThreshold }) : t('quizFailed', { score, threshold: quiz.passThreshold })}
+                        </div>
                     </div>
                     {failed && (
                         <button className="quiz-retry" onClick={handleRetry} type="button">
                             {tc('retry')}
                         </button>
                     )}
-                </div>
+                </>
             )}
 
             <style jsx>{`
@@ -135,6 +137,11 @@ export function QuizSection({ quiz, onPass, disabled = false }: QuizSectionProps
                     background: rgba(255, 255, 255, 0.03);
                     border: 1px solid rgba(255, 255, 255, 0.08);
                     border-radius: 16px;
+                }
+                @media (max-width: 640px) {
+                    .quiz-section {
+                        padding: 16px;
+                    }
                 }
                 .quiz-title {
                     font-size: 1.1rem;
@@ -206,10 +213,13 @@ export function QuizSection({ quiz, onPass, disabled = false }: QuizSectionProps
                 }
                 .option-text {
                     flex: 1;
+                    min-width: 0;
+                    word-break: break-word;
                 }
                 .option-mark {
                     font-weight: 700;
                     font-size: 0.85rem;
+                    flex-shrink: 0;
                 }
                 .quiz-submit {
                     margin-top: 20px;
@@ -232,9 +242,7 @@ export function QuizSection({ quiz, onPass, disabled = false }: QuizSectionProps
                     margin-top: 20px;
                     padding: 16px;
                     border-radius: 10px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
+                    text-align: center;
                 }
                 .result-pass {
                     background: rgba(20, 241, 149, 0.08);
@@ -245,25 +253,29 @@ export function QuizSection({ quiz, onPass, disabled = false }: QuizSectionProps
                     border: 1px solid rgba(255, 107, 107, 0.2);
                 }
                 .result-text {
-                    font-size: 0.9rem;
+                    font-size: 0.85rem;
                     font-weight: 600;
                     color: rgba(255, 255, 255, 0.85);
+                    line-height: 1.5;
                 }
                 .quiz-retry {
-                    padding: 8px 16px;
-                    border: 1px solid rgba(255, 255, 255, 0.15);
-                    border-radius: 8px;
-                    background: transparent;
-                    color: rgba(255, 255, 255, 0.7);
-                    font-size: 0.8rem;
-                    font-weight: 600;
+                    margin-top: 12px;
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 10px;
+                    background: rgba(255, 255, 255, 0.04);
+                    color: rgba(255, 255, 255, 0.85);
+                    font-size: 0.9rem;
+                    font-weight: 700;
                     cursor: pointer;
                     transition: all 0.15s;
                 }
                 .quiz-retry:hover {
-                    background: rgba(255, 255, 255, 0.05);
+                    background: rgba(255, 255, 255, 0.08);
+                    border-color: rgba(255, 255, 255, 0.35);
                 }
             `}</style>
-        </div>
+        </div >
     );
 }
