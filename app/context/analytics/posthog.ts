@@ -20,6 +20,7 @@ export function initPostHog(): void {
         api_host: POSTHOG_HOST,
         capture_pageview: false, // Manual tracking via useAnalytics hook
         capture_pageleave: true,
+        disable_surveys: true, // Prevents surveys.js (31.8 KiB) + DM Sans font load
         disable_session_recording: !isProd,
         session_recording: isProd
             ? { recordCrossOriginIframes: true }

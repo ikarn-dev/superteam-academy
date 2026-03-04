@@ -17,8 +17,16 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (!initialized.current) {
-            initPostHog();
-            initialized.current = true;
+            const init = () => {
+                initPostHog();
+                initialized.current = true;
+            };
+            // Defer analytics init until browser is idle to reduce main-thread work
+            if ('requestIdleCallback' in window) {
+                (window as Window).requestIdleCallback(init);
+            } else {
+                setTimeout(init, 2000);
+            }
         }
     }, []);
 

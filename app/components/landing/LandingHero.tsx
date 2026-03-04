@@ -3,12 +3,20 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/context/i18n/navigation';
 import Image from 'next/image';
-import { LiquidMetal } from '@/components/ui/liquid-metal';
-import { AnimatePresence, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
+/* ── Heavy deps: dynamic import to keep initial bundle small ── */
+const LiquidMetal = dynamic(
+    () => import('@/components/ui/liquid-metal').then(m => ({ default: m.LiquidMetal })),
+    { ssr: false }
+);
 
-
+/**
+ * RotatingWord — lightweight CSS-only word rotation.
+ * framer-motion was the largest single chunk (~74 KiB).
+ * Replaced with CSS keyframe animation to eliminate the dependency entirely.
+ */
 function RotatingWord({ words }: { words: string[] }) {
     const [index, setIndex] = useState(0);
 
@@ -26,19 +34,13 @@ function RotatingWord({ words }: { words: string[] }) {
         <span className="relative inline-block text-left align-baseline">
             {/* Invisible longest word to reserve space */}
             <span className="invisible font-array font-bold">{longestWord}</span>
-            {/* Animated word positioned absolutely on top */}
-            <AnimatePresence mode="wait">
-                <motion.span
-                    key={words[index]}
-                    className="absolute bottom-0 left-0 inline-block font-array font-bold text-brand-green-dark dark:text-brand-yellow"
-                    initial={{ y: '40%', opacity: 0, filter: 'blur(4px)' }}
-                    animate={{ y: '0%', opacity: 1, filter: 'blur(0px)' }}
-                    exit={{ y: '-40%', opacity: 0, filter: 'blur(4px)' }}
-                    transition={{ duration: 0.4, ease: 'easeInOut' }}
-                >
-                    {words[index]}
-                </motion.span>
-            </AnimatePresence>
+            {/* Animated word with CSS transition */}
+            <span
+                key={words[index]}
+                className="absolute bottom-0 left-0 inline-block font-array font-bold text-brand-green-dark dark:text-brand-yellow animate-word-rotate"
+            >
+                {words[index]}
+            </span>
         </span>
     );
 }

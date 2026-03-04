@@ -78,7 +78,7 @@ export function StreaksCalendar() {
                             ) : (
                                 <span
                                     className={`font-supreme text-[11px] font-semibold ${cell.isToday
-                                        ? 'flex h-6 w-6 items-center justify-center rounded-full bg-brand-green-emerald text-white'
+                                        ? 'flex h-6 w-6 items-center justify-center rounded-full bg-[#006838] text-white'
                                         : 'text-[#1b3320] dark:text-brand-cream/60'
                                         }`}
                                 >
